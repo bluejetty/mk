@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>PDF Markup Studio</title>
+    <meta name="description" content="PDF Markup Studio — built on Replit. Update this description to reflect the app." />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="PDF Markup Studio" />
+    <meta property="og:description" content="PDF Markup Studio — built on Replit. Update this description to reflect the app." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PDF Markup Studio" />
+    <meta name="twitter:description" content="PDF Markup Studio — built on Replit. Update this description to reflect the app." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-BHANfV9u.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C-h654LD.css">
+  </head>
+  <body>
+    <!-- IE11 / legacy browser guard — runs before the module bundle, which IE can't parse -->
+    <script>
+      if (typeof Promise === 'undefined' || typeof Symbol === 'undefined' || !('noModule' in document.createElement('script'))) {
+        document.documentElement.innerHTML = [
+          '<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f0f4f8;display:flex;align-items:center;justify-content:center;min-height:100vh}',
+          '.msg{background:#fff;border-radius:12px;padding:40px 48px;max-width:520px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.12)}',
+          'h1{font-size:22px;color:#173a59;margin-bottom:12px}p{font-size:14px;color:#555;line-height:1.6;margin-bottom:10px}',
+          'a{color:#2979b8;text-decoration:none;font-weight:600}ul{text-align:left;display:inline-block;margin-top:8px;font-size:13px;color:#444;line-height:2}',
+          '</style>',
+          '<div class="msg">',
+          '<h1>Browser not supported</h1>',
+          '<p>PDF Markup &amp; Area Estimation Tool requires a modern browser. Internet Explorer is not supported.</p>',
+          '<p>Please open this page in one of these free browsers:</p>',
+          '<ul><li><a href="https://www.google.com/chrome/">Google Chrome</a></li>',
+          '<li><a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a></li>',
+          '<li><a href="https://www.microsoft.com/edge">Microsoft Edge</a></li></ul>',
+          '<p style="margin-top:16px;font-size:12px;color:#888">All three are free and work on Windows 7.</p>',
+          '</div>'
+        ].join('');
+      }
+    </script>
+    <noscript>
+      <div style="font-family:Arial,sans-serif;padding:40px;text-align:center;color:#173a59">
+        <h2>JavaScript is required</h2>
+        <p>Please enable JavaScript in your browser to use PDF Markup &amp; Area Estimation Tool.</p>
+      </div>
+    </noscript>
+
+    <!-- Iterator polyfill — Chrome 109 (last Chromium on Win7) lacks the Iterator global.
+         Must run before the module bundle, which may reference Iterator.prototype. -->
+    <script>
+      if (typeof Iterator === 'undefined') {
+        // %IteratorPrototype% is the shared proto of all built-in iterators.
+        // We expose it as window.Iterator so library code that reads Iterator.prototype works.
+        var _iterProto = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
+        window.Iterator = function Iterator() {};
+        window.Iterator.prototype = _iterProto;
+        window.Iterator.from = function (iterable) {
+          if (iterable == null) throw new TypeError('Iterator.from: null/undefined');
+          return typeof iterable[Symbol.iterator] === 'function'
+            ? iterable[Symbol.iterator]()
+            : iterable;
+        };
+      }
+    </script>
+
+    <!-- Global crash net — catches any top-level JS error that occurs before React mounts.
+         The ErrorBoundary in main.tsx only catches errors inside the React tree;
+         module-load failures and top-level throws land here instead. -->
+    <script>
+      (function () {
+        var _crashed = false;
+        function showCrash(msg) {
+          if (_crashed) return;
+          _crashed = true;
+          // Only show if React hasn't already painted something
+          var root = document.getElementById('root');
+          if (root && root.children.length > 0) return;
+          var box = document.createElement('div');
+          box.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#f0f4f8;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Arial,sans-serif';
+          box.innerHTML =
+            '<div style="background:#fff;border-radius:12px;padding:36px 44px;max-width:560px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.12)">' +
+            '<h2 style="font-size:20px;color:#173a59;margin:0 0 12px">Something went wrong loading the app</h2>' +
+            '<p style="font-size:13px;color:#555;margin:0 0 16px;line-height:1.6">The app failed to start. Please send the error below to support.</p>' +
+            '<pre id="_err_detail" style="text-align:left;background:#f5f5f5;border-radius:6px;padding:12px;font-size:12px;color:#c0392b;overflow:auto;max-height:180px;word-break:break-all;white-space:pre-wrap">' +
+            escHtml(msg) + '</pre>' +
+            '<button onclick="location.reload()" style="margin-top:16px;background:#173a59;color:#fff;border:none;border-radius:6px;padding:10px 24px;font-size:14px;cursor:pointer">Reload page</button>' +
+            '</div>';
+          document.body.appendChild(box);
+        }
+        function escHtml(s) {
+          return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+        window.addEventListener('error', function (e) {
+          var src = (e.filename ? ' (' + e.filename.replace(/.*\//, '') + ':' + e.lineno + ')' : '');
+          showCrash((e.message || 'Unknown error') + src);
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason;
+          var msg = (r && r.message) ? r.message : (r ? String(r) : 'Unhandled promise rejection');
+          showCrash(msg);
+        });
+      })();
+    </script>
+
+    <div id="root"></div>
+  </body>
+</html>
