@@ -81,6 +81,8 @@ type PdfTextItem = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 const defaultInk = "#1b78b7";
 const colors = ["#1b78b7", "#173a59", "#d06441", "#e2a72f", "#2b8b70", "#7e5ba6"];
+const NODE_SIZE = 3;
+const NODE_RADIUS = NODE_SIZE / 2;
 
 const toolMeta: { id: Tool; label: string; shortcut: string; icon: typeof MousePointer2; group: "markup" | "precision" | "utility" }[] = [
   { id: "select",    label: "Select",     shortcut: "V", icon: MousePointer2,   group: "markup"    },
@@ -843,8 +845,8 @@ function Home() {
     if (m.kind === "line" && m.a && m.b) return (
       <g key={m.id} transform={selTx} className={cls}>
         <line x1={m.a.x} y1={m.a.y} x2={m.b.x} y2={m.b.y} stroke={m.color} strokeWidth={m.width} strokeLinecap="round" />
-        <rect x={m.a.x - 4} y={m.a.y - 4} width={8} height={8} fill={m.color} />
-        <rect x={m.b.x - 4} y={m.b.y - 4} width={8} height={8} fill={m.color} />
+        <rect x={m.a.x - NODE_RADIUS} y={m.a.y - NODE_RADIUS} width={NODE_SIZE} height={NODE_SIZE} fill={m.color} />
+        <rect x={m.b.x - NODE_RADIUS} y={m.b.y - NODE_RADIUS} width={NODE_SIZE} height={NODE_SIZE} fill={m.color} />
       </g>
     );
     if (m.kind === "dimension" && m.a && m.b) {
@@ -2046,8 +2048,8 @@ function Home() {
                         {/* Snap ring — shows only when the line endpoint is actually snapped to a node */}
                         {lineEffectiveExisting && (tool === "line" || tool === "dimension") && lineAnchor && (
                           <>
-                            <circle cx={lineEffectiveExisting.x} cy={lineEffectiveExisting.y} r={18} fill="none" stroke="#22d3ee" strokeWidth={2.5} opacity={0.9} />
-                            <circle cx={lineEffectiveExisting.x} cy={lineEffectiveExisting.y} r={26} fill="none" stroke="#22d3ee" strokeWidth={1} opacity={0.4} />
+                            <circle cx={lineEffectiveExisting.x} cy={lineEffectiveExisting.y} r={NODE_SIZE} fill="none" stroke="#22d3ee" strokeWidth={1.5} opacity={0.9} />
+                            <circle cx={lineEffectiveExisting.x} cy={lineEffectiveExisting.y} r={NODE_RADIUS} fill="#22d3ee" opacity={0.8} />
                           </>
                         )}
 
@@ -2055,9 +2057,9 @@ function Home() {
                         {areaPoints.length > 0 && previewAreaPt && (
                           <>
                             <polygon points={[...areaPoints, previewAreaPt].map((p)=>`${p.x},${p.y}`).join(" ")} fill={color} fillOpacity={0.08} stroke={color} strokeWidth={2} strokeDasharray="10,5" strokeLinejoin="round" />
-                            {areaPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={5} fill={color} opacity={0.8} />)}
+                            {areaPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={NODE_RADIUS} fill={color} opacity={0.8} />)}
                             {areaPoints.length >= 3 && Math.hypot(previewAreaPt.x - areaPoints[0].x, previewAreaPt.y - areaPoints[0].y) < 3 && (
-                              <circle cx={areaPoints[0].x} cy={areaPoints[0].y} r={14} fill={color} fillOpacity={0.25} stroke={color} strokeWidth={2} />
+                              <circle cx={areaPoints[0].x} cy={areaPoints[0].y} r={NODE_SIZE} fill={color} fillOpacity={0.25} stroke={color} strokeWidth={1.5} />
                             )}
                           </>
                         )}
@@ -2067,10 +2069,10 @@ function Home() {
                           <line x1={scaleAnchor.x} y1={scaleAnchor.y} x2={scalePreviewPt.x} y2={scalePreviewPt.y} stroke="#f59e0b" strokeWidth={2} strokeDasharray="8,4" />
                         )}
                         {tool === "setscale" && scaleAnchor && scaleModeStep >= 1 && (
-                          <circle cx={scaleAnchor.x} cy={scaleAnchor.y} r={6} fill="#f59e0b" />
+                          <circle cx={scaleAnchor.x} cy={scaleAnchor.y} r={NODE_RADIUS} fill="#f59e0b" />
                         )}
                         {tool === "setscale" && scaleEnd && (
-                          <circle cx={scaleEnd.x} cy={scaleEnd.y} r={6} fill="#f59e0b" />
+                          <circle cx={scaleEnd.x} cy={scaleEnd.y} r={NODE_RADIUS} fill="#f59e0b" />
                         )}
 
                         {/* Zoom box rubber-band — shown during drag or after first corner click */}
@@ -2093,8 +2095,8 @@ function Home() {
                           const pt = lineEffectiveExisting ?? areaEffectiveExisting!;
                           return (
                             <>
-                              <circle cx={pt.x} cy={pt.y} r={13} fill="none" stroke="var(--color-primary)" strokeWidth={2.5} opacity={0.9} />
-                              <circle cx={pt.x} cy={pt.y} r={4} fill="var(--color-primary)" opacity={0.85} />
+                              <circle cx={pt.x} cy={pt.y} r={NODE_SIZE} fill="none" stroke="var(--color-primary)" strokeWidth={1.5} opacity={0.9} />
+                              <circle cx={pt.x} cy={pt.y} r={NODE_RADIUS} fill="var(--color-primary)" opacity={0.85} />
                             </>
                           );
                         })()}
@@ -2112,10 +2114,10 @@ function Home() {
                                 strokeDasharray="6,4" opacity={0.55}
                               />
                               {/* Small dot on source point */}
-                              <circle cx={proj.source.x} cy={proj.source.y} r={4} fill="none" stroke="var(--color-primary)" strokeWidth={1.5} opacity={0.6} />
+                              <circle cx={proj.source.x} cy={proj.source.y} r={NODE_RADIUS} fill="none" stroke="var(--color-primary)" strokeWidth={1} opacity={0.6} />
                               {/* Snap ring on locked-axis position */}
-                              <circle cx={proj.snapped.x} cy={proj.snapped.y} r={13} fill="none" stroke="var(--color-primary)" strokeWidth={2.5} opacity={0.9} />
-                              <circle cx={proj.snapped.x} cy={proj.snapped.y} r={4} fill="var(--color-primary)" opacity={0.85} />
+                              <circle cx={proj.snapped.x} cy={proj.snapped.y} r={NODE_SIZE} fill="none" stroke="var(--color-primary)" strokeWidth={1.5} opacity={0.9} />
+                              <circle cx={proj.snapped.x} cy={proj.snapped.y} r={NODE_RADIUS} fill="var(--color-primary)" opacity={0.85} />
                             </>
                           );
                         })()}
