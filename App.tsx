@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import * as pdfjsLib from "pdfjs-dist";
 import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist";
 import { PDFDocument, rgb, LineCapStyle } from "pdf-lib";
 import {
@@ -22,13 +21,22 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-// pdfjs-dist v3 ships a classic CommonJS worker (.js, not .mjs) — no ES module
-// worker, no Iterator dependency, works on Chrome 60+ including Windows 7.
-// Vite bundles the worker locally at build time via the new URL() pattern.
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url,
-).href;
+// ─── pdfjs loader ─────────────────────────────────────────────────────────────
+// pdfjs-dist is large (~800 KB). We lazy-load it on first use so the landing
+// page renders immediately on slow connections / old hardware.
+let _pdfjsLib: typeof import("pdfjs-dist") | null = null;
+async function getPdfjs() {
+  if (_pdfjsLib) return _pdfjsLib;
+  const lib = await import("pdfjs-dist");
+  // pdfjs-dist v3 ships a classic CJS worker — works on Chrome 60+ / Windows 7.
+  // Vite bundles the worker locally at build time via the new URL() pattern.
+  lib.GlobalWorkerOptions.workerSrc = new URL(
+    "pdfjs-dist/build/pdf.worker.min.js",
+    import.meta.url,
+  ).href;
+  _pdfjsLib = lib;
+  return lib;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tool = "select" | "pen" | "highlight" | "eraser" | "text" | "line" | "dimension" | "area" | "setscale";
@@ -917,6 +925,7 @@ function Home() {
     setError(""); setIsLoading(true);
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
+      const pdfjsLib = await getPdfjs();
       const doc = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
       setPdfDoc(doc); setPdfBytes(bytes); setFileName(file.name); setFileSize(file.size);
       setPageCount(doc.numPages); setMarkup([]); setHistory([]); setFuture([]);
@@ -1012,6 +1021,7 @@ function Home() {
       const binary = atob(session.pdfBase64);
       const bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const pdfjsLib = await getPdfjs();
       const doc = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
       setPdfDoc(doc); setPdfBytes(bytes);
       setFileName(session.fileName); setFileSize(bytes.length);
@@ -2630,8 +2640,8 @@ function EmptyState({ fileInputRef, isLoading, error, onFileChange, onOpen }: { 
         >
           <div className="rounded-xl border border-border bg-card px-6 py-5 shadow-[0_18px_50px_rgba(42,83,112,.10)] md:px-10 md:py-7">
             {isLoading
-              ? (<><div className="mx-auto flex size-11 items-center justify-center rounded-2xl bg-secondary"><Cloud className="animate-pulse text-primary" size={23} /></div><h2 className="mt-3 text-base font-semibold">Opening your plan…</h2><p className="mt-1.5 text-sm text-muted-foreground">Preparing a private workspace in your browser.</p></>)
-              : (<><div className="mx-auto flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Upload size={23} /></div><h2 className="mt-3 text-base font-semibold text-sidebar">Drop a PDF plan here</h2><p className="mt-1.5 text-sm text-muted-foreground">or choose a file from your device · PDF only</p><button onClick={onOpen} className="button-primary mt-4"><FilePlus2 size={16} /> Choose PDF</button></>)}
+              ? (<><div className="mx-auto flex size-11 items-center justify-center rounded-2xl bg-secondary"><Cloud className="animate-pulse text-primary" size={23} /></div><h2 className="mt-3 text-base font-semibold">Opening your plan…</h2><p className="mt-1.5 text-sm text-muted-foreground">Preparing a private workspace in your browser.</p><button type="button" className="button-primary mt-4 cursor-wait opacity-80" disabled aria-busy="true"><span className="size-3.5 rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" /> Loading…</button></>)
+              : (<><div className="mx-auto flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Upload size={23} /></div><h2 className="mt-3 text-base font-semibold text-sidebar">Drop a PDF plan here</h2><p className="mt-1.5 text-sm text-muted-foreground">or choose a file from your device · PDF only</p><button type="button" onClick={onOpen} className="button-primary mt-4"><FilePlus2 size={16} /> Choose PDF</button></>)}
           </div>
         </div>
         {error && <div className="mt-3 flex max-w-md items-center gap-2 rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-left text-xs text-destructive" role="alert"><CircleHelp size={16} className="shrink-0" />{error}</div>}
