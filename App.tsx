@@ -413,8 +413,10 @@ function Home() {
   // Updated after lineEffectiveExisting is computed (below) — see sync after snap block
 
   // ── Snap to existing endpoints / vertices ────────────────────────────────────
-  const SNAP_EXISTING_PX = 38; // normalized units — larger = easier to snap onto nodes
-  const SNAP_PROJECT_PERP = 32; // how far off the locked line an existing point can be and still project
+  // Keep snap targets precise: these values are in the SVG's 0–1000 coordinate
+  // space, which maps to roughly one pixel per unit at the normal canvas size.
+  const SNAP_EXISTING_PX = 3;
+  const SNAP_PROJECT_PERP = 3; // perpendicular tolerance for locked-axis projection
   // Memoized — only recomputed when markup changes, not on every pointer-move render
   const existingPoints = useMemo((): Pt[] => {
     const pts: Pt[] = [];
@@ -1199,7 +1201,7 @@ function Home() {
     // Area tool
     if (tool === "area") {
       const pt = areaEffectiveExisting ?? areaProjected?.snapped ?? (areaPoints.length > 0 ? currentSnap(raw, areaPoints[areaPoints.length - 1]) : raw);
-      const closeThreshold = 25;
+      const closeThreshold = 3;
       if (areaPoints.length >= 3 && Math.hypot(pt.x - areaPoints[0].x, pt.y - areaPoints[0].y) < closeThreshold) {
         // Close the polygon
         if (scale) {
@@ -2054,7 +2056,7 @@ function Home() {
                           <>
                             <polygon points={[...areaPoints, previewAreaPt].map((p)=>`${p.x},${p.y}`).join(" ")} fill={color} fillOpacity={0.08} stroke={color} strokeWidth={2} strokeDasharray="10,5" strokeLinejoin="round" />
                             {areaPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={5} fill={color} opacity={0.8} />)}
-                            {areaPoints.length >= 3 && Math.hypot(previewAreaPt.x - areaPoints[0].x, previewAreaPt.y - areaPoints[0].y) < 28 && (
+                            {areaPoints.length >= 3 && Math.hypot(previewAreaPt.x - areaPoints[0].x, previewAreaPt.y - areaPoints[0].y) < 3 && (
                               <circle cx={areaPoints[0].x} cy={areaPoints[0].y} r={14} fill={color} fillOpacity={0.25} stroke={color} strokeWidth={2} />
                             )}
                           </>
